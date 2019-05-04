@@ -34,8 +34,14 @@
           <div class="form-group">
             <input class="form-control" type="number" id="number" placeholder="Phone Number" required>
           </div>
-          <button class="btn btn-primary" type="submit">Add Contact</button>
+          <button name="save-btn" class="btn btn-primary" type="submit">Add Contact</button>
         </form>
+        <div id="error-message" class="alert alert-danger" role="alert">
+          Error adding the contact. Please try again.
+        </div>
+        <div id="success-message" class="alert alert-success" role="alert">
+          Contact added successfully!
+        </div>
       </div>
     </div>
   </div>
@@ -43,6 +49,8 @@
     $(document).ready(() => {
       $('#addContact').on('submit', (e) => {
         e.preventDefault();
+        document.getElementsByName('save-btn')[0].setAttribute('disabled', 'true');
+        document.getElementsByName('save-btn')[0].textContent = 'Adding contact...';
         const name = $('#name').val();
         const number = $('#number').val();
         fetch('/add-contact', {
@@ -56,9 +64,17 @@
           .then(res => {
             if (res.error) {
               console.log('Error saving the contact');
+              document.getElementById('error-message').style.display = 'block';
             } else {
               console.log('Response saved successfully');
+              document.getElementById('success-message').style.display = 'block';
             }
+            setTimeout(() => {
+              document.getElementById('error-message').style.display = 'none';
+              document.getElementById('success-message').style.display = 'none';
+            }, 3000);
+            document.getElementsByName('save-btn')[0].textContent = 'Add Contact';
+            document.getElementsByName('save-btn')[0].removeAttribute('disabled');
           })
           .catch(err => {
             console.log('Error saving due to:', err);
